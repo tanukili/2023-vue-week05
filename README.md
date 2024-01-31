@@ -36,7 +36,11 @@ npm run lint
 
 - npm create vue@latest
 - package.json 新增 deploy 指令
-- 安裝 gh-pages 套件
-- 更改路由編譯
+- 安裝 gh-pages 套件（使用`npm run deploy`完成 pages 部屬）
+- 更改路由編譯模式
 - 設置環境變數
+
+## 補齊 First Commit
+
+- 設定編譯路徑 base
 
