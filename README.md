@@ -44,7 +44,7 @@ npm run lint
 
 - 設定編譯路徑 base
 
-## 額外安裝套件 Commit
+## 安裝基本套件 Commit
 
 - axios、vue-axios
 - sass
@@ -62,3 +62,12 @@ npm run lint
 - dotenv 使用在`vite.config.js`，訪問環境變數。
 - eslint-plugin-promise 與 eslint-plugin-n 沒有安裝。
 - 更新 VScode 的 ESLint mod 版本後才正常顯示。
+
+## 安裝額外套件 Commit
+
+- 表單驗證：vee-validate、@vee-validate/rules、@vee-validate/i18n
+- vue-loading-overlay
+
+### 備註
+
+- 安裝 eslint-config-prettier，解決衝突問題
