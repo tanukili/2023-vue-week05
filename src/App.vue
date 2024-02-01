@@ -36,7 +36,7 @@ export default {
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+    <!-- 取用 assets：相對路徑 @/assets/logo.svg -->
 
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
