@@ -9,7 +9,7 @@ import eslintPlugin from 'vite-plugin-eslint';
 // https://vitejs.dev/config/
 export default defineConfig({
   // dotenv：使用 process.env 訪問環境變數（依運行環境切換 base 路徑）
-  base: process.env.NODE === 'production' ? `/${process.env.REPOSITORY_NAME}/` : '/',
+  base: process.env.NODE_ENV === 'production' ? `/${process.env.REPOSITORY_NAME}/` : '/',
   plugins: [
     vue(),
     // 增加畫面警告：指定 ESLint 檢查檔案

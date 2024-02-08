@@ -1,7 +1,9 @@
 <script setup></script>
 
 <template>
-  <div>
-    <h1>This is an home page</h1>
+  <!-- <RouterLink to="/">Home</RouterLink> |
+  <RouterLink to="/carts">購物車</RouterLink> -->
+  <div class="mt-4">
+    <RouterView></RouterView>
   </div>
 </template>
