@@ -1,19 +1,35 @@
 <script>
 import { mapState, mapActions } from 'pinia';
+import * as bootstrap from 'bootstrap';
 import productStore from '../stores/productStore';
+import cartStore from '../stores/cartStore';
 
 export default {
   data() {
-    return {};
+    return {
+      modal: null,
+    };
   },
   methods: {
     ...mapActions(productStore, ['getAllProducrs', 'getSingleProduct']),
+    ...mapActions(cartStore, ['addToCart']),
   },
   computed: {
     ...mapState(productStore, ['products', 'singleProduct', 'isOnSale', 'isOnSaleArr']),
+    modalPorductNum() {
+      return Number.parseInt(this.$refs.productModalinput.value, 10);
+    },
   },
   mounted() {
     this.getAllProducrs();
+    this.modal = new bootstrap.Modal(this.$refs.productModal);
+    this.$refs.productModal.addEventListener('shown.bs.modal', () => {
+      console.log(this.$refs.productModalinput.value);
+      this.$refs.productModalinput.value = 0;
+    });
+  },
+  unmounted() {
+    this.modal.dispose();
   },
 };
 </script>
@@ -68,7 +84,9 @@ export default {
             </p>
           </td>
           <td>
-            <button type="button" class="btn btn-primary btn-sm">加入購物車</button>
+            <button @click="addToCart(product.id)" type="button" class="btn btn-primary btn-sm">
+              加入購物車
+            </button>
           </td>
         </tr>
       </tbody>
@@ -76,6 +94,7 @@ export default {
   </div>
   <!-- 單一產品 modal -->
   <div
+    ref="productModal"
     class="modal fade"
     id="productModal"
     tabindex="-1"
@@ -128,13 +147,14 @@ export default {
             關閉
           </button>
           <div class="input-group" style="width: 40%">
-            <input
-              type="number"
-              min="0"
-              class="form-control"
-              :value="singleProduct.qty ? singleProduct.qty : '0'"
-            />
-            <button class="btn btn-primary" type="button">加入購物車</button>
+            <input type="number" min="0" class="form-control" ref="productModalinput" />
+            <button
+              @click="addToCart(singleProduct.id, modalPorductNum, modal)"
+              class="btn btn-primary"
+              type="button"
+            >
+              加入購物車
+            </button>
           </div>
         </div>
       </div>

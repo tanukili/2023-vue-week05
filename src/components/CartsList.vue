@@ -1,25 +1,30 @@
 <script>
-const url = import.meta.env.VITE_API_URL;
-const path = import.meta.env.VITE_API_PATH;
+import { mapActions, mapState } from 'pinia';
+import cartStore from '../stores/cartStore';
 
 export default {
   data() {
     return {
-      carts: [],
+      cartsInput: [],
     };
   },
+  methods: {
+    ...mapActions(cartStore, ['getCarts', 'delFromCart', 'delAllCarts', 'editCart']),
+    checkQty(index, id, productId) {
+      const targetValue = Number.parseInt(this.$refs.cartInput[index].value, 10);
+      if (targetValue >= 1) {
+        this.editCart(id, productId, targetValue);
+      } else {
+        alert('修改數量必須大於 1');
+        this.$refs.cartInput[index].value = this.carts[index].qty;
+      }
+    },
+  },
   mounted() {
-    this.axios
-      .get(`${url}/api/${path}/cart`)
-      .then((res) => {
-        console.log(res.data.data.carts);
-        this.carts = res.data.data.carts;
-      })
-      .catch((err) => {
-        console.log(err.response);
-      });
+    this.getCarts();
   },
   computed: {
+    ...mapState(cartStore, ['carts', 'finalTotal', 'inputIsAble']),
     isOnSale() {
       return this.carts.map((cart) => cart.product.origin_price > cart.product.price);
     },
@@ -31,7 +36,12 @@ export default {
   <div class="bg-light">
     <div class="container text-center py-4">
       <h2>我的購物車</h2>
-      <p v-if="!carts" class="my-5">目前購物車沒有商品喔！</p>
+      <div class="text-end mb-2">
+        <button @click="delAllCarts" type="button" class="btn btn-outline-danger btn-sm text-end">
+          清空購物車
+        </button>
+      </div>
+      <p v-if="!carts.length" class="my-5">目前購物車沒有商品喔！</p>
       <table v-else class="table table-hover align-middle">
         <thead>
           <tr>
@@ -45,7 +55,7 @@ export default {
         <tbody>
           <tr v-for="(cart, index) in carts" :key="cart.id">
             <th scope="row">
-              <button type="button" class="btn btn-outline-secondary">
+              <button @click="delFromCart(cart.id)" type="button" class="btn btn-outline-secondary">
                 <i class="bi bi-trash3-fill"></i>
               </button>
             </th>
@@ -53,7 +63,15 @@ export default {
             <td>
               <div class="d-flex justify-content-center">
                 <div class="input-group" style="max-width: 120px">
-                  <input type="number" class="form-control" :value="cart.qty" />
+                  <input
+                    @change="checkQty(index, cart.id, cart.product_id)"
+                    type="number"
+                    min="1"
+                    class="form-control"
+                    :value="cart.qty"
+                    ref="cartInput"
+                    :disabled="inputIsAble"
+                  />
                   <span class="input-group-text">{{ cart.product.unit }}</span>
                 </div>
               </div>
@@ -75,6 +93,12 @@ export default {
             <td class="text-end">{{ cart.total }}</td>
           </tr>
         </tbody>
+        <tfoot class="text-end">
+          <tr>
+            <td colspan="4" class="py-3">總計</td>
+            <td>{{ finalTotal }}</td>
+          </tr>
+        </tfoot>
       </table>
     </div>
   </div>
