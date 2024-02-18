@@ -9,7 +9,8 @@ export default defineStore('cartStore', {
     carts: [],
     finalTotal: 0,
     inputIsAble: false,
-    isCartLoading: false,
+    isAddingToCart: false,
+    isDelingFromCart: false,
   }),
   getters: {},
   actions: {
@@ -25,7 +26,7 @@ export default defineStore('cartStore', {
         });
     },
     addToCart(id, qty = 1, modal = null) {
-      this.isCartLoading = true;
+      this.isAddingToCart = true;
       const data = {
         data: {
           product_id: id,
@@ -36,7 +37,7 @@ export default defineStore('cartStore', {
         .post(`${url}/api/${path}/cart`, data)
         .then((res) => {
           alert(res.data.message);
-          this.isCartLoading = false;
+          this.isAddingToCart = false;
           this.getCarts();
           if (modal) {
             modal.hide();
@@ -44,28 +45,34 @@ export default defineStore('cartStore', {
         })
         .catch((err) => {
           alert(err.response.data.message);
-          this.isCartLoading = false;
+          this.isAddingToCart = false;
         });
     },
     delFromCart(id) {
+      this.isDelingFromCart = true;
       axios
         .delete(`${url}/api/${path}/cart/${id}`)
         .then((res) => {
+          this.isDelingFromCart = false;
           this.getCarts();
           alert(res.data.message);
         })
         .catch((err) => {
           alert(`無法刪除單品：${err.response.data.message}`);
+          this.isDelingFromCart = false;
         });
     },
     delAllCarts() {
+      this.isDelingFromCart = true;
       axios
         .delete(`${url}/api/${path}/carts`)
         .then((res) => {
+          this.isDelingFromCart = false;
           this.getCarts();
           alert(res.data.message);
         })
         .catch((err) => {
+          this.isDelingFromCart = false;
           alert(`無法清除商品：${err.response.data.message}`);
         });
     },

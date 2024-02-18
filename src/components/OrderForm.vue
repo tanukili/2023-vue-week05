@@ -6,9 +6,15 @@ const url = import.meta.env.VITE_API_URL;
 const path = import.meta.env.VITE_API_PATH;
 
 export default {
+  data() {
+    return {
+      isAddingOrder: false,
+    };
+  },
   methods: {
     ...mapActions(cartStore, ['getCarts']),
     checkoutOrder(values, actions) {
+      this.isAddingOrder = true;
       const { name, email, tel, address, message } = values;
       const data = {
         data: {
@@ -25,6 +31,7 @@ export default {
         this.axios
           .post(`${url}/api/${path}/order`, data)
           .then((res) => {
+            this.isAddingOrder = false;
             alert(`${res.data.message}，訂單編號為「${res.data.orderId}」`);
             actions.resetForm();
             this.getCarts();
@@ -33,6 +40,7 @@ export default {
             alert(err.response.data.message);
           });
       } else {
+        this.isAddingOrder = false;
         alert('目前購物車沒有東西');
         window.scrollTo({
           top: 50,
@@ -133,7 +141,14 @@ export default {
               placeholder="請輸入留言"
             ></VField>
           </div>
-          <button type="submit" class="btn btn-primary w-75 align-self-center">送出訂單</button>
+          <button type="submit" class="btn btn-primary w-75 align-self-center">
+            送出訂單
+            <span
+              v-if="isAddingOrder"
+              class="spinner-border spinner-border-sm"
+              role="status"
+            ></span>
+          </button>
         </VForm>
       </div>
     </div>

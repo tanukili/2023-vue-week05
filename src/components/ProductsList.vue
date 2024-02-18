@@ -30,7 +30,7 @@ export default {
       'isOnSaleArr',
       'loadingContainer',
     ]),
-    ...mapState(cartStore, ['isCartLoading']),
+    ...mapState(cartStore, ['isAddingToCart']),
     modalPorductNum() {
       return Number.parseInt(this.$refs.productModalinput.value, 10);
     },
@@ -39,7 +39,7 @@ export default {
     this.getAllProducrs();
     this.modal = new bootstrap.Modal(this.$refs.productModal);
     this.$refs.productModal.addEventListener('shown.bs.modal', () => {
-      this.$refs.productModalinput.value = 0;
+      this.$refs.productModalinput.value = 1;
     });
   },
   unmounted() {
@@ -77,7 +77,7 @@ export default {
               data-bs-toggle="modal"
               data-bs-target="#productModal"
               @click="getSingleProduct(product.id), (this.activedBtn = index)"
-              :disabled="isLoading || isCartLoading"
+              :disabled="isLoading || isAddingToCart"
               :id="`showDetailBtn${index}`"
             >
               產品資訊
@@ -103,7 +103,7 @@ export default {
               @click="addToCart(product.id), (this.activedBtn = index)"
               type="button"
               class="btn btn-primary btn-sm"
-              :disabled="isLoading || isCartLoading"
+              :disabled="isLoading || isAddingToCart"
               :id="`addToCartBtn${index}`"
             >
               加入購物車
@@ -111,7 +111,7 @@ export default {
           </td>
         </tr>
       </tbody>
-      <ProductBtnsLoading v-if="isLoading || isCartLoading" :activedBtn="activedBtn" />
+      <ProductBtnsLoading v-if="isLoading || isAddingToCart" :activedBtn="activedBtn" />
     </table>
   </div>
   <!-- 單一產品 modal -->
@@ -170,20 +170,24 @@ export default {
             關閉
           </button>
           <div class="input-group" style="width: 40%">
-            <input type="number" min="0" class="form-control" ref="productModalinput" />
+            <input type="number" min="1" value="1" class="form-control" ref="productModalinput" />
             <button
               @click="addToCart(singleProduct.id, modalPorductNum, modal)"
               class="btn btn-primary"
               type="button"
             >
               加入購物車
+              <span
+                v-if="isAddingToCart"
+                class="spinner-border spinner-border-sm"
+                role="status"
+              ></span>
             </button>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <!-- loading -->
 </template>
 
 <style scoped lang="scss"></style>

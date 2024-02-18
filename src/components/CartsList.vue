@@ -6,6 +6,7 @@ export default {
   data() {
     return {
       cartsInput: [],
+      loadingBtn: '',
     };
   },
   methods: {
@@ -19,12 +20,16 @@ export default {
         this.$refs.cartInput[index].value = this.carts[index].qty;
       }
     },
+    teleportLoading(btnName) {
+      this.loadingBtn = `#${btnName}`;
+      console.log(this.loadingBtn);
+    },
   },
   mounted() {
     this.getCarts();
   },
   computed: {
-    ...mapState(cartStore, ['carts', 'finalTotal', 'inputIsAble']),
+    ...mapState(cartStore, ['carts', 'finalTotal', 'inputIsAble', 'isDelingFromCart']),
     isOnSale() {
       return this.carts.map((cart) => cart.product.origin_price > cart.product.price);
     },
@@ -37,7 +42,13 @@ export default {
     <div class="container text-center py-4">
       <h2>我的購物車</h2>
       <div class="text-end mb-2">
-        <button @click="delAllCarts" type="button" class="btn btn-outline-danger btn-sm text-end">
+        <button
+          v-if="carts.length"
+          @click="delAllCarts(), teleportLoading('delAllBtn')"
+          type="button"
+          class="btn btn-outline-danger btn-sm text-end"
+          id="delAllBtn"
+        >
           清空購物車
         </button>
       </div>
@@ -55,8 +66,14 @@ export default {
         <tbody>
           <tr v-for="(cart, index) in carts" :key="cart.id">
             <th scope="row">
-              <button @click="delFromCart(cart.id)" type="button" class="btn btn-outline-secondary">
-                <i class="bi bi-trash3-fill"></i>
+              <button
+                @click="delFromCart(cart.id), teleportLoading(`delBtn${cart.id}`)"
+                type="button"
+                class="btn btn-outline-secondary"
+                :disabled="isDelingFromCart"
+                :id="`delBtn${cart.id}`"
+              >
+                <i v-if="loadingBtn !== `#delBtn${cart.id}`" class="bi bi-trash3-fill"></i>
               </button>
             </th>
             <td>{{ cart.product.title }}</td>
@@ -102,4 +119,7 @@ export default {
       </table>
     </div>
   </div>
+  <teleport v-if="isDelingFromCart" :to="loadingBtn">
+    <span class="spinner-border spinner-border-sm" role="status"></span>
+  </teleport>
 </template>

@@ -1,12 +1,6 @@
 <script>
-import { mapState } from 'pinia';
-import productStore from '../stores/productStore';
-
 export default {
   props: ['activedBtn'],
-  computed: {
-    ...mapState(productStore, ['isLoading']),
-  },
 };
 </script>
 
