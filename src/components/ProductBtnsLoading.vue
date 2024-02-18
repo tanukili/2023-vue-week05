@@ -7,9 +7,6 @@ export default {
   computed: {
     ...mapState(productStore, ['isLoading']),
   },
-  mounted() {
-    console.log(this.activedBtn);
-  },
 };
 </script>
 

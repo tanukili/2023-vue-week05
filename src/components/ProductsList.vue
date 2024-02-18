@@ -2,14 +2,14 @@
 import * as bootstrap from 'bootstrap';
 import Loading from 'vue-loading-overlay';
 import { mapState, mapActions } from 'pinia';
-import ButtonLoading from './ButtonLoading.vue';
+import ProductBtnsLoading from './ProductBtnsLoading.vue';
 import productStore from '../stores/productStore';
 import cartStore from '../stores/cartStore';
 
 export default {
   components: {
     Loading,
-    ButtonLoading,
+    ProductBtnsLoading,
   },
   data() {
     return {
@@ -111,7 +111,7 @@ export default {
           </td>
         </tr>
       </tbody>
-      <ButtonLoading v-if="isLoading || isCartLoading" :activedBtn="activedBtn" />
+      <ProductBtnsLoading v-if="isLoading || isCartLoading" :activedBtn="activedBtn" />
     </table>
   </div>
   <!-- 單一產品 modal -->
