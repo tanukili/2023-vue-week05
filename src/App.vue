@@ -1,21 +1,4 @@
-<script>
-export default {
-  methods: {
-    submit() {
-      const loader = this.$loading.show({
-        // Optional parameters
-      });
-      // simulate AJAX
-      setTimeout(() => {
-        loader.hide();
-      }, 1000);
-    },
-  },
-  mounted() {
-    this.submit();
-  },
-};
-</script>
+<script></script>
 
 <template>
   <header>
@@ -24,5 +7,4 @@ export default {
   <RouterView />
 </template>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>

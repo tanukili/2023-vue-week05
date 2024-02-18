@@ -1,13 +1,20 @@
 <script>
-import { mapState, mapActions } from 'pinia';
 import * as bootstrap from 'bootstrap';
+import Loading from 'vue-loading-overlay';
+import { mapState, mapActions } from 'pinia';
+import ButtonLoading from './ButtonLoading.vue';
 import productStore from '../stores/productStore';
 import cartStore from '../stores/cartStore';
 
 export default {
+  components: {
+    Loading,
+    ButtonLoading,
+  },
   data() {
     return {
       modal: null,
+      activedBtn: null,
     };
   },
   methods: {
@@ -15,7 +22,15 @@ export default {
     ...mapActions(cartStore, ['addToCart']),
   },
   computed: {
-    ...mapState(productStore, ['products', 'singleProduct', 'isOnSale', 'isOnSaleArr']),
+    ...mapState(productStore, [
+      'products',
+      'singleProduct',
+      'isLoading',
+      'isOnSale',
+      'isOnSaleArr',
+      'loadingContainer',
+    ]),
+    ...mapState(cartStore, ['isCartLoading']),
     modalPorductNum() {
       return Number.parseInt(this.$refs.productModalinput.value, 10);
     },
@@ -24,7 +39,6 @@ export default {
     this.getAllProducrs();
     this.modal = new bootstrap.Modal(this.$refs.productModal);
     this.$refs.productModal.addEventListener('shown.bs.modal', () => {
-      console.log(this.$refs.productModalinput.value);
       this.$refs.productModalinput.value = 0;
     });
   },
@@ -42,8 +56,7 @@ export default {
           <th scope="col">產品預覽</th>
           <th scope="col">產品名稱</th>
           <th scope="col" class="text-end">價格</th>
-          <th scope="col"></th>
-          <th scope="col"></th>
+          <th scope="col" width="200"></th>
         </tr>
       </thead>
       <tbody>
@@ -63,7 +76,9 @@ export default {
               class="btn btn-outline-info btn-sm"
               data-bs-toggle="modal"
               data-bs-target="#productModal"
-              @click="getSingleProduct(product.id)"
+              @click="getSingleProduct(product.id), (this.activedBtn = index)"
+              :disabled="isLoading || isCartLoading"
+              :id="`showDetailBtn${index}`"
             >
               產品資訊
             </button>
@@ -84,12 +99,19 @@ export default {
             </p>
           </td>
           <td>
-            <button @click="addToCart(product.id)" type="button" class="btn btn-primary btn-sm">
+            <button
+              @click="addToCart(product.id), (this.activedBtn = index)"
+              type="button"
+              class="btn btn-primary btn-sm"
+              :disabled="isLoading || isCartLoading"
+              :id="`addToCartBtn${index}`"
+            >
               加入購物車
             </button>
           </td>
         </tr>
       </tbody>
+      <ButtonLoading v-if="isLoading || isCartLoading" :activedBtn="activedBtn" />
     </table>
   </div>
   <!-- 單一產品 modal -->
@@ -102,11 +124,12 @@ export default {
     aria-hidden="true"
   >
     <div class="modal-dialog">
-      <div class="modal-content">
+      <Loading :active="isLoading" :is-full-page="false"></Loading>
+      <div class="modal-content vl-parent">
         <div class="modal-header py-2 bg-info bg-opacity-50">
           <h5 class="modal-title fw-bold">{{ singleProduct.title }}</h5>
         </div>
-        <div class="modal-body">
+        <div class="modal-body vl-hide">
           <div class="container-fluid">
             <div class="row">
               <div class="col">
@@ -160,10 +183,7 @@ export default {
       </div>
     </div>
   </div>
+  <!-- loading -->
 </template>
 
-<style scoped lang="scss">
-// img {
-//   object-fit: cover;
-// }
-</style>
+<style scoped lang="scss"></style>

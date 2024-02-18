@@ -8,6 +8,8 @@ export default defineStore('productsStore', {
   state: () => ({
     products: [],
     singleProduct: {},
+    isLoading: false,
+    loadingContainer: {},
   }),
   getters: {
     isOnSale() {
@@ -29,13 +31,16 @@ export default defineStore('productsStore', {
         });
     },
     getSingleProduct(id) {
+      this.isLoading = true;
       axios
         .get(`${url}/api/${path}/product/${id}`)
         .then((res) => {
           this.singleProduct = res.data.product;
+          this.isLoading = false;
         })
         .catch((err) => {
           alert(`無法取得該商品資料：${err.response.data.message}`);
+          this.isLoading = false;
         });
     },
   },

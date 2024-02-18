@@ -9,6 +9,7 @@ export default defineStore('cartStore', {
     carts: [],
     finalTotal: 0,
     inputIsAble: false,
+    isCartLoading: false,
   }),
   getters: {},
   actions: {
@@ -24,6 +25,7 @@ export default defineStore('cartStore', {
         });
     },
     addToCart(id, qty = 1, modal = null) {
+      this.isCartLoading = true;
       const data = {
         data: {
           product_id: id,
@@ -34,6 +36,7 @@ export default defineStore('cartStore', {
         .post(`${url}/api/${path}/cart`, data)
         .then((res) => {
           alert(res.data.message);
+          this.isCartLoading = false;
           this.getCarts();
           if (modal) {
             modal.hide();
@@ -41,6 +44,7 @@ export default defineStore('cartStore', {
         })
         .catch((err) => {
           alert(err.response.data.message);
+          this.isCartLoading = false;
         });
     },
     delFromCart(id) {

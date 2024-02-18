@@ -1,9 +1,48 @@
 <script>
+import { mapActions, mapState } from 'pinia';
+import cartStore from '../stores/cartStore';
+
+const url = import.meta.env.VITE_API_URL;
+const path = import.meta.env.VITE_API_PATH;
+
 export default {
   methods: {
-    onSubmit() {
-      console.log('表單送出');
+    ...mapActions(cartStore, ['getCarts']),
+    checkoutOrder(values, actions) {
+      const { name, email, tel, address, message } = values;
+      const data = {
+        data: {
+          user: {
+            name,
+            email,
+            tel,
+            address,
+          },
+          message,
+        },
+      };
+      if (this.carts.length) {
+        this.axios
+          .post(`${url}/api/${path}/order`, data)
+          .then((res) => {
+            alert(`${res.data.message}，訂單編號為「${res.data.orderId}」`);
+            actions.resetForm();
+            this.getCarts();
+          })
+          .catch((err) => {
+            alert(err.response.data.message);
+          });
+      } else {
+        alert('目前購物車沒有東西');
+        window.scrollTo({
+          top: 50,
+          behavior: 'smooth', // smooth 模式
+        });
+      }
     },
+  },
+  computed: {
+    ...mapState(cartStore, ['carts']),
   },
 };
 </script>
@@ -13,21 +52,21 @@ export default {
     <h2 class="mb-3 text-center">填寫訂單資料</h2>
     <div class="row justify-content-center">
       <div class="col-10 col-md-8 col-lg-6">
-        <VForm v-slot="{ errors }" @submit="onSubmit" class="d-flex flex-column">
+        <VForm v-slot="{ errors }" @submit="checkoutOrder" class="d-flex flex-column">
           <div class="mb-3">
             <span class="d-flex justify-content-between">
               <label for="email" class="form-label">信箱</label>
-              <ErrorMessage name="信箱" v-slot="{ message }" class="invalid-feedback">
-                <span class="small text-danger">{{ message }}</span>
+              <ErrorMessage name="email" v-slot="{ message }" class="invalid-feedback">
+                <span class="small text-danger">{{ message.replace('email', '信箱') }}</span>
               </ErrorMessage>
             </span>
             <!-- 當錯誤訊息有對應 key 時，加入 is-invalid -->
             <VField
               id="email"
-              name="信箱"
+              name="email"
               type="email"
               class="form-control"
-              :class="{ 'is-invalid': errors['信箱'] }"
+              :class="{ 'is-invalid': errors['email'] }"
               placeholder="請輸入信箱"
               rules="email|required"
             ></VField>
@@ -35,16 +74,16 @@ export default {
           <div class="mb-3">
             <span class="d-flex justify-content-between">
               <label for="name" class="form-label">收件人姓名</label>
-              <ErrorMessage name="姓名" v-slot="{ message }" class="invalid-feedback">
-                <span class="small text-danger">{{ message }}</span>
+              <ErrorMessage name="name" v-slot="{ message }" class="invalid-feedback">
+                <span class="small text-danger">{{ message.replace('name', '姓名') }}</span>
               </ErrorMessage>
             </span>
             <VField
               id="name"
-              name="姓名"
+              name="name"
               type="text"
               class="form-control"
-              :class="{ 'is-invalid': errors['姓名'] }"
+              :class="{ 'is-invalid': errors['name'] }"
               placeholder="請輸入收件人姓名"
               rules="required"
             ></VField>
@@ -52,33 +91,33 @@ export default {
           <div class="mb-3">
             <span class="d-flex justify-content-between">
               <label for="phone" class="form-label">收件人電話</label>
-              <ErrorMessage name="電話" v-slot="{ message }" class="invalid-feedback">
-                <span class="small text-danger">{{ message }}</span>
+              <ErrorMessage name="tel" v-slot="{ message }" class="invalid-feedback">
+                <span class="small text-danger">{{ message.replace('tel', '電話') }}</span>
               </ErrorMessage>
             </span>
             <VField
               id="phone"
-              name="電話"
+              name="tel"
               type="tel"
               class="form-control"
-              :class="{ 'is-invalid': errors['電話'] }"
-              placeholder="請輸入收件人電話"
-              rules="required"
+              :class="{ 'is-invalid': errors['tel'] }"
+              placeholder="請輸入 09 開頭的手機號碼"
+              :rules="{ required: true, regex: /^09\d{8}$/ }"
             ></VField>
           </div>
           <div class="mb-3">
             <span class="d-flex justify-content-between">
               <label for="address" class="form-label">收件人地址</label>
-              <ErrorMessage name="地址" v-slot="{ message }" class="invalid-feedback">
-                <span class="small text-danger">{{ message }}</span>
+              <ErrorMessage name="address" v-slot="{ message }" class="invalid-feedback">
+                <span class="small text-danger">{{ message.replace('address', '地址') }}</span>
               </ErrorMessage>
             </span>
             <VField
               id="address"
-              name="地址"
+              name="address"
               type="text"
               class="form-control"
-              :class="{ 'is-invalid': errors['地址'] }"
+              :class="{ 'is-invalid': errors['address'] }"
               placeholder="請輸入收件人地址"
               rules="required"
             ></VField>
@@ -87,7 +126,7 @@ export default {
             <label for="message" class="form-label">留言</label>
             <VField
               id="message"
-              name="地址"
+              name="message"
               as="textarea"
               class="form-control"
               style="height: 96px"

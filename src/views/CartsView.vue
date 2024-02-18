@@ -9,13 +9,23 @@ export default {
     CartsList,
     ProductsList,
   },
+  mounted() {
+    const loader = this.$loading.show({
+      container: this.fullPage,
+    });
+    setTimeout(() => {
+      loader.hide();
+    }, 1000);
+  },
 };
 </script>
 
 <template>
-  <ProductsList></ProductsList>
-  <CartsList></CartsList>
-  <OrderForm></OrderForm>
+  <div class="vl-parent" ref="loadingContainer">
+    <ProductsList></ProductsList>
+    <CartsList></CartsList>
+    <OrderForm></OrderForm>
+  </div>
 </template>
 
 <style>
