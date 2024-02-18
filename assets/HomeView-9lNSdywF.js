@@ -1,0 +1,1 @@
+import{_ as n,c as r,a as e,w as a,b as t,d as _,F as d,r as s,o as i}from"./index-mAOIyDQr.js";const m={},l={class:"mt-4"};function u(f,p){const o=s("RouterLink"),c=s("RouterView");return i(),r(d,null,[e(o,{to:"/"},{default:a(()=>[t("Home")]),_:1}),t(" | "),e(o,{to:"/carts"},{default:a(()=>[t("購物車")]),_:1}),_("div",l,[e(c)])],64)}const w=n(m,[["render",u]]);export{w as default};
